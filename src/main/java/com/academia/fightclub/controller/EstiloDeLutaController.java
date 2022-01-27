@@ -17,6 +17,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.academia.fightclub.domain.exception.EntidadeEmUsoException;
+import com.academia.fightclub.domain.exception.EntidadeNaoEncontradaException;
 import com.academia.fightclub.domain.model.EstiloDeLuta;
 import com.academia.fightclub.domain.repository.EstiloDeLutaRepository;
 import com.academia.fightclub.domain.service.CadastroEstiloDeLutaService;
@@ -71,12 +73,20 @@ public class EstiloDeLutaController {
 	}
 
 	
+	
 	@DeleteMapping("/{alunoId}")
 	public ResponseEntity<EstiloDeLuta> remover(@PathVariable Long lutaId) {
 		
+			try {
 			cadastroLuta.excluir(lutaId);
 			return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+			} catch (EntidadeNaoEncontradaException e) {
+				return ResponseEntity.notFound().build();
 
+			} catch (EntidadeEmUsoException e) {
+				return ResponseEntity.status(HttpStatus.CONFLICT).build();
+			}
+			
 		
 	}
 }

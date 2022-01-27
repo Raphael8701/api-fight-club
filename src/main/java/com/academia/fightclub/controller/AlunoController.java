@@ -17,6 +17,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.academia.fightclub.domain.exception.EntidadeEmUsoException;
+import com.academia.fightclub.domain.exception.EntidadeNaoEncontradaException;
 import com.academia.fightclub.domain.model.Aluno;
 import com.academia.fightclub.domain.repository.AlunoRepository;
 import com.academia.fightclub.domain.service.CadastroAlunoService;
@@ -72,12 +74,18 @@ public class AlunoController {
 	}
 
 	
+	
 	@DeleteMapping("/{alunoId}")
 	public ResponseEntity<Aluno> remover(@PathVariable Long alunoId) {
-		
+			try {
 			cadastroAluno.excluir(alunoId);
 			return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+			} catch (EntidadeNaoEncontradaException e) {
+				return ResponseEntity.notFound().build();
 
+			} catch (EntidadeEmUsoException e) {
+				return ResponseEntity.status(HttpStatus.CONFLICT).build();
+			}
 		
 	}
 
